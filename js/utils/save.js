@@ -187,6 +187,155 @@ function fixData(defaultData, newData) {
 		}
 	}
 }
+
+function fixDataENtoBE(defaultData, newData) {
+	for (item in defaultData) {
+		if (defaultData[item] == null) {
+			if (newData[item] === undefined)
+				newData[item] = null;
+		}
+		else if (Array.isArray(defaultData[item])) {
+			if (newData[item] === undefined)
+				newData[item] = defaultData[item];
+
+			else
+				fixDataENtoBE(defaultData[item], newData[item]);
+		}
+		else if (defaultData[item] instanceof ExpantaNum) { // Convert to ExpantaNum
+			if (newData[item] === undefined)
+				newData[item] = defaultData[item];
+
+			else if (Array.isArray(newData[item])) //专门给额外升级卡做的，所以为什么grid的getStartData和当前data类型不一致不行哼哼哼啊啊啊啊 2025.4.1
+				newData[item][0] = new Decimal(new ExpantaNum1(newData[item][0]).toString())
+			else
+				newData[item] = new Decimal(new ExpantaNum1(newData[item]).toString())
+		}
+		else if ((!!defaultData[item]) && (typeof defaultData[item] === "object")) {
+			if (newData[item] === undefined || (typeof defaultData[item] !== "object"))
+				newData[item] = defaultData[item];
+
+			else
+				fixDataENtoBE(defaultData[item], newData[item]);
+		}
+		else {
+			if (newData[item] === undefined)
+				newData[item] = defaultData[item];
+		}
+	}
+
+
+}
+
+function saveENtoBE() {
+	let defaultData = getStartPlayer()
+	let savestr = prompt("在此粘贴你在ExpantaNum原版的存档")
+	let newData = JSON.parse(LZString.decompressFromBase64(savestr))
+
+	fixDataENtoBE(defaultData, newData)
+
+	for (layer in layers) {
+		if (player[layer].best !== undefined)
+			player[layer].best = new ExpantaNum(player[layer].best);
+		if (player[layer].total !== undefined)
+			player[layer].total = new ExpantaNum(player[layer].total);
+
+		if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
+
+			if (!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs))
+				player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
+		}
+		if (layers[layer].microtabs) {
+			for (item in layers[layer].microtabs)
+				if (!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item]))
+					player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
+		}
+	}
+
+	let str = LZString.compressToBase64(JSON.stringify(newData));
+
+	const el = document.createElement("textarea");
+	el.value = str;
+	document.body.appendChild(el);
+	el.select();
+	el.setSelectionRange(0, 99999);
+	document.execCommand("copy");
+	document.body.removeChild(el);
+}
+
+function fixDataBEtoEN(defaultData, newData) {
+	for (item in defaultData) {
+		if (defaultData[item] == null) {
+			if (newData[item] === undefined)
+				newData[item] = null;
+		}
+		else if (Array.isArray(defaultData[item])) {
+			if (newData[item] === undefined)
+				newData[item] = defaultData[item];
+
+			else
+				fixDataBEtoEN(defaultData[item], newData[item]);
+		}
+		else if (defaultData[item] instanceof ExpantaNum) { // Convert to ExpantaNum
+			if (newData[item] === undefined)
+				newData[item] = defaultData[item];
+
+			else if (Array.isArray(newData[item])) //专门给额外升级卡做的，所以为什么grid的getStartData和当前data类型不一致不行哼哼哼啊啊啊啊 2025.4.1
+				newData[item][0] = new ExpantaNum1(new Decimal(newData[item][0]).toString())
+			else
+				newData[item] = new ExpantaNum1(new Decimal(newData[item]).toString())
+		}
+		else if ((!!defaultData[item]) && (typeof defaultData[item] === "object")) {
+			if (newData[item] === undefined || (typeof defaultData[item] !== "object"))
+				newData[item] = defaultData[item];
+
+			else
+				fixDataBEtoEN(defaultData[item], newData[item]);
+		}
+		else {
+			if (newData[item] === undefined)
+				newData[item] = defaultData[item];
+		}
+	}
+
+
+}
+
+function saveBEtoEN() {
+	let defaultData = getStartPlayer()
+	let savestr = prompt("在此粘贴你在Break Eternity Edition的存档")
+	let newData = JSON.parse(LZString.decompressFromBase64(savestr))
+
+	fixDataBEtoEN(defaultData, newData)
+
+	for (layer in layers) {
+		if (player[layer].best !== undefined)
+			player[layer].best = new ExpantaNum(player[layer].best);
+		if (player[layer].total !== undefined)
+			player[layer].total = new ExpantaNum(player[layer].total);
+
+		if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
+
+			if (!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs))
+				player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
+		}
+		if (layers[layer].microtabs) {
+			for (item in layers[layer].microtabs)
+				if (!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item]))
+					player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
+		}
+	}
+
+	let str = LZString.compressToBase64(JSON.stringify(newData));
+
+	const el = document.createElement("textarea");
+	el.value = str;
+	document.body.appendChild(el);
+	el.select();
+	el.setSelectionRange(0, 99999);
+	document.execCommand("copy");
+	document.body.removeChild(el);
+}
+
 function load() {
 	let get = localStorage.getItem(modInfo.id);
 
