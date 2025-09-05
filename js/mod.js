@@ -30,7 +30,7 @@ function changelog() {
 		<span style="font-size: 17px;">
 			<h3>Break Eternity Edition</h3><br>
 				- 数字库改为原来的break_eternity.js，性能方面有所提升<br>
-				- Break Eternity Edition（以下简称BE版）和原版ExpantaNum版存档暂不兼容<br>
+				- Break Eternity Edition（以下简称BE版）和原版ExpantaNum版存档暂不兼容，可以前往设置界面转换<br>
 				- BE版无法更改记数法<br>
 				- BE版的更新更慢，请前往原版检查更新<br>
 				- 如果出现了BE版特有的bug请前往github提issue<br>
