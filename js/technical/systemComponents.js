@@ -268,6 +268,11 @@ var systemComponents = {
                 <td><button class="opt" onclick="importSaveFromFile()">{{geti18n()?'导入存档(文本文件)':'Import save from file'}}</button></td>
 				<td><button class="opt" onclick="saveENtoBE()">{{geti18n()?'转换原版存档到BE版(复制到黏贴板)':'Export'}}<h6>{{geti18n()?"(注: 此为BE版限定按钮，不支持有资源大于1.2029F7的存档，否则会坏档，使用前务必先备份，以防万一)":"(Placeholder)"}}</h6></button></td>
 				<td><button class="opt" onclick="saveBEtoEN()">{{geti18n()?'转换BE版存档到原版(复制到黏贴板)':'Import'}}<h6>{{geti18n()?"(注: 此为BE版限定按钮，不支持有资源大于1.2029F7的存档，否则会坏档，使用前务必先备份，以防万一)":"(Placeholder)"}}</h6></button></td>
+				<td><button class="opt" onclick="saveENtoBE_file()">{{geti18n()?'转换原版存档到BE版(文件到文件)':'Export'}}<h6>{{geti18n()?"(注: 此为BE版限定按钮，不支持有资源大于1.2029F7的存档，否则会坏档，使用前务必先备份，以防万一)":"(Placeholder)"}}</h6></button></td>
+			</tr><br>
+			<tr>
+				<td><h1>{{''}}&nbsp;&nbsp;&nbsp;</h1></td>
+				<td><button class="opt" onclick="saveBEtoEN_file()">{{geti18n()?'转换BE版存档到原版(文件到文件)':'Import'}}<h6>{{geti18n()?"(注: 此为BE版限定按钮，不支持有资源大于1.2029F7的存档，否则会坏档，使用前务必先备份，以防万一)":"(Placeholder)"}}</h6></button></td>
 			</tr><br>
 			<tr>
                 <td><h1>{{geti18n()?'优化':'Qol'}}&nbsp;&nbsp;&nbsp;</h1></td>
