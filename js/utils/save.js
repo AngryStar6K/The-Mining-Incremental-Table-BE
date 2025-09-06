@@ -3,7 +3,7 @@ function save(force) {
 	NaNcheck(player)
 	if (NaNalert && !force) return
 	localStorage.setItem(modInfo.id, LZString.compressToBase64(JSON.stringify(player)));
-	localStorage.setItem(modInfo.id+"_options", LZString.compressToBase64(JSON.stringify(options)));
+	localStorage.setItem(modInfo.id + "_options", LZString.compressToBase64(JSON.stringify(options)));
 
 }
 function startPlayerBase() {
@@ -118,13 +118,13 @@ function getStartChallenges(layer) {
 }
 function getStartGrid(layer) {
 	let data = {};
-	if (! layers[layer].grid) return data
-	if (layers[layer].grid.maxRows === undefined) layers[layer].grid.maxRows=layers[layer].grid.rows
-	if (layers[layer].grid.maxCols === undefined) layers[layer].grid.maxCols=layers[layer].grid.cols
+	if (!layers[layer].grid) return data
+	if (layers[layer].grid.maxRows === undefined) layers[layer].grid.maxRows = layers[layer].grid.rows
+	if (layers[layer].grid.maxCols === undefined) layers[layer].grid.maxCols = layers[layer].grid.cols
 
 	for (let y = 1; y <= layers[layer].grid.maxRows; y++) {
 		for (let x = 1; x <= layers[layer].grid.maxCols; x++) {
-			data[100*y + x] = layers[layer].grid.getStartData(100*y + x)
+			data[100 * y + x] = layers[layer].grid.getStartData(100 * y + x)
 		}
 	}
 	return data;
@@ -262,6 +262,83 @@ function saveENtoBE() {
 	document.body.removeChild(el);
 }
 
+function saveENtoBE_file() {
+	let defaultData = getStartPlayer()
+	let a = document.createElement("input")
+	a.type = 'file'
+	a.accept = '.txt,text/plain'
+	a.style.display = 'none'
+
+	a.onchange = event => {
+		const file = event.target.files[0];
+		if (!file) return;
+
+		const reader = new FileReader();
+
+		reader.onload = function (e) {
+			try {
+				const saveDataString = e.target.result;
+				if (typeof saveDataString !== 'string' || saveDataString.trim() === '') {
+					throw new Error("无法读取文件或文件为空");
+				}
+				let newData = JSON.parse(LZString.decompressFromBase64(saveDataString))
+
+				fixDataENtoBE(defaultData, newData)
+
+				for (layer in layers) {
+					if (player[layer].best !== undefined)
+						player[layer].best = new ExpantaNum(player[layer].best);
+					if (player[layer].total !== undefined)
+						player[layer].total = new ExpantaNum(player[layer].total);
+
+					if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
+
+						if (!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs))
+							player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
+					}
+					if (layers[layer].microtabs) {
+						for (item in layers[layer].microtabs)
+							if (!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item]))
+								player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
+					}
+				}
+
+				let str = LZString.compressToBase64(JSON.stringify(newData));
+
+				const el = document.createElement("textarea");
+				el.value = str;
+				document.body.appendChild(el);
+				el.select();
+				el.setSelectionRange(0, 99999);
+				document.execCommand("copy");
+				document.body.removeChild(el);
+
+				let file = new Blob([str], { type: "text/plain" })
+				window.URL = window.URL || window.webkitURL;
+				let b = document.createElement("a")
+				b.href = window.URL.createObjectURL(file)
+				b.download = "The Mining Incremental Table Break Eternity Edition Save - " + new Date().toGMTString() + ".txt"
+				b.click()
+			} catch (error) {
+				alert("导入失败");
+				console.error("导入失败：", error);
+			}
+		};
+
+		reader.onerror = function () {
+			alert("读取文件时发生错误");
+			console.error("FileReader error:", reader.error);
+		};
+
+		reader.readAsText(file);
+	};
+
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+
+}
+
 function fixDataBEtoEN(defaultData, newData) {
 	for (item in defaultData) {
 		if (defaultData[item] == null) {
@@ -336,6 +413,83 @@ function saveBEtoEN() {
 	document.body.removeChild(el);
 }
 
+function saveBEtoEN_file() {
+	let defaultData = getStartPlayer()
+	let a = document.createElement("input")
+	a.type = 'file'
+	a.accept = '.txt,text/plain'
+	a.style.display = 'none'
+
+	a.onchange = event => {
+		const file = event.target.files[0];
+		if (!file) return;
+
+		const reader = new FileReader();
+
+		reader.onload = function (e) {
+			try {
+				const saveDataString = e.target.result;
+				if (typeof saveDataString !== 'string' || saveDataString.trim() === '') {
+					throw new Error("无法读取文件或文件为空");
+				}
+				let newData = JSON.parse(LZString.decompressFromBase64(saveDataString))
+
+				fixDataBEtoEN(defaultData, newData)
+
+				for (layer in layers) {
+					if (player[layer].best !== undefined)
+						player[layer].best = new ExpantaNum(player[layer].best);
+					if (player[layer].total !== undefined)
+						player[layer].total = new ExpantaNum(player[layer].total);
+
+					if (layers[layer].tabFormat && !Array.isArray(layers[layer].tabFormat)) {
+
+						if (!Object.keys(layers[layer].tabFormat).includes(player.subtabs[layer].mainTabs))
+							player.subtabs[layer].mainTabs = Object.keys(layers[layer].tabFormat)[0];
+					}
+					if (layers[layer].microtabs) {
+						for (item in layers[layer].microtabs)
+							if (!Object.keys(layers[layer].microtabs[item]).includes(player.subtabs[layer][item]))
+								player.subtabs[layer][item] = Object.keys(layers[layer].microtabs[item])[0];
+					}
+				}
+
+				let str = LZString.compressToBase64(JSON.stringify(newData));
+
+				const el = document.createElement("textarea");
+				el.value = str;
+				document.body.appendChild(el);
+				el.select();
+				el.setSelectionRange(0, 99999);
+				document.execCommand("copy");
+				document.body.removeChild(el);
+
+				let file = new Blob([str], { type: "text/plain" })
+				window.URL = window.URL || window.webkitURL;
+				let b = document.createElement("a")
+				b.href = window.URL.createObjectURL(file)
+				b.download = "The Mining Incremental Table Save - " + new Date().toGMTString() + ".txt"
+				b.click()
+			} catch (error) {
+				alert("导入失败");
+				console.error("导入失败：", error);
+			}
+		};
+
+		reader.onerror = function () {
+			alert("读取文件时发生错误");
+			console.error("FileReader error:", reader.error);
+		};
+
+		reader.readAsText(file);
+	};
+
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+
+}
+
 function load() {
 	let get = localStorage.getItem(modInfo.id);
 
@@ -369,26 +523,26 @@ function load() {
 	updateTabFormats()
 	loadVue();
 
-	if(modInfo.otherLanguageMod===true && player.Language.sure===false){
+	if (modInfo.otherLanguageMod === true && player.Language.sure === false) {
 		options.ch = undefined
-	}else if(modInfo.otherLanguageMod===false){
+	} else if (modInfo.otherLanguageMod === false) {
 		options.ch = undefined
 	}
 
-	if(modInfo.otherLanguageMod){
+	if (modInfo.otherLanguageMod) {
 		modInfo.languageMod = undefined
 	}
 
-	if(modInfo.otherLanguageMod===true && options.ch===undefined){
+	if (modInfo.otherLanguageMod === true && options.ch === undefined) {
 		showTab('Language')
-	}else{
+	} else {
 		getActiveClass(player.tab)
 	}
 
-	if(modInfo.forceOneTab==true){
+	if (modInfo.forceOneTab == true) {
 		options.forceOneTab = true
 		showTab('tree-tab')
-	}else{
+	} else {
 		options.forceOneTab = false
 	}
 
@@ -396,10 +550,10 @@ function load() {
 }
 
 function loadOptions() {
-	let get2 = localStorage.getItem(modInfo.id+"_options");
-	if (get2) 
+	let get2 = localStorage.getItem(modInfo.id + "_options");
+	if (get2)
 		options = Object.assign(getStartOptions(), JSON.parse(LZString.decompressFromBase64(get2)));
-	else 
+	else
 		options = getStartOptions()
 	if (themes.indexOf(options.theme) < 0) theme = "default"
 	fixData(options, getStartOptions())
@@ -450,14 +604,14 @@ function exportSave() {
 }
 
 function exportSaveToFile() {
-    let str = LZString.compressToBase64(JSON.stringify(player))
-    save();
-    let file = new Blob([str], {type: "text/plain"})
-    window.URL = window.URL || window.webkitURL;
-    let a = document.createElement("a")
-    a.href = window.URL.createObjectURL(file)
-    a.download = "The Mining Incremental Table Save - "+new Date().toGMTString()+".txt"
-    a.click()
+	let str = LZString.compressToBase64(JSON.stringify(player))
+	save();
+	let file = new Blob([str], { type: "text/plain" })
+	window.URL = window.URL || window.webkitURL;
+	let a = document.createElement("a")
+	a.href = window.URL.createObjectURL(file)
+	a.download = "The Mining Incremental Table Save - " + new Date().toGMTString() + ".txt"
+	a.click()
 }
 
 function importSave(imported = undefined, forced = false) {
@@ -483,40 +637,40 @@ function importSave(imported = undefined, forced = false) {
 
 function importSaveFromFile() {
 	let a = document.createElement("input")
-    a.type = 'file'
-    a.accept = '.txt,text/plain'
+	a.type = 'file'
+	a.accept = '.txt,text/plain'
 	a.style.display = 'none'
 
 		a.onchange = event => {
-        const file = event.target.files[0];
-        if (!file) return;
+		const file = event.target.files[0];
+		if (!file) return;
 
-        const reader = new FileReader();
+		const reader = new FileReader();
 
-        reader.onload = function(e) {
-            try {
-                const saveDataString = e.target.result; 
-                if (typeof saveDataString !== 'string' || saveDataString.trim() === '') {
-                    throw new Error("无法读取文件或文件为空");
-                }
-                importSave(saveDataString)
-            } catch (error) {
-                alert("导入失败");
-                console.error("导入失败：", error);
-            }
-        };
+		reader.onload = function(e) {
+			try {
+				const saveDataString = e.target.result; 
+				if (typeof saveDataString !== 'string' || saveDataString.trim() === '') {
+					throw new Error("无法读取文件或文件为空");
+				}
+				importSave(saveDataString)
+			} catch (error) {
+				alert("导入失败");
+				console.error("导入失败：", error);
+			}
+		};
 
-        reader.onerror = function() {
-            alert("读取文件时发生错误");
-            console.error("FileReader error:", reader.error);
-        };
+		reader.onerror = function() {
+			alert("读取文件时发生错误");
+			console.error("FileReader error:", reader.error);
+		};
 
-        reader.readAsText(file);
-    };
+		reader.readAsText(file);
+	};
 
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
 
 }
 
@@ -549,7 +703,7 @@ var saveInterval = setInterval(function () {
 }, 5000);
 
 window.onbeforeunload = () => {
-    if (player.autosave) {
-        save();
-    }
+	if (player.autosave) {
+		save();
+	}
 };
