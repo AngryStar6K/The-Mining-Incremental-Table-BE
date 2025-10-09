@@ -15583,11 +15583,11 @@ addLayer("redstone", {
         onClick(data, id) {
             if (!player.redstone.chosenID) player.redstone.chosenID = id
             else if (player.redstone.chosenID == id) player.redstone.chosenID = undefined
-            //object: ExpantaNum数字（附魔等级） array: 额外等级卡
+            //object: Decimal数字（附魔等级） array: 额外等级卡 BE版
             else if (player.redstone.grid[player.redstone.chosenID].array) {
                 if (player.redstone.grid[player.redstone.chosenID].eq(0)) player.redstone.chosenID = id
                 else {
-                    if (data.array) {
+                    if (data.mag + 1) {
                         if (player.redstone.grid[player.redstone.chosenID].eq(data)) player.redstone.grid[player.redstone.chosenID] = d(0),
                             player.redstone.grid[id] = player.redstone.grid[id].add(1),
                             player.redstone.chosenID = undefined
@@ -15602,7 +15602,7 @@ addLayer("redstone", {
                 }
             }
             else if (player.redstone.grid[player.redstone.chosenID] instanceof Array) {
-                if (data.array) {
+                if (data.mag + 1) {
                     if (data.eq(0)) player.redstone.grid[id] = player.redstone.grid[player.redstone.chosenID],
                         player.redstone.grid[player.redstone.chosenID] = d(0),
                         player.redstone.chosenID = undefined
@@ -15616,7 +15616,7 @@ addLayer("redstone", {
             }
         },
         getTitle(data, id) {
-            if (data.array) {
+            if (data.mag + 1) {
                 if (data.eq(0)) return '空槽位'
                 else return '时运 ' + roman(data)
             }
@@ -15624,7 +15624,7 @@ addLayer("redstone", {
         },
         getStyle(data, id) {
             let s
-            if (data.array) {
+            if (data.mag + 1) {
                 if (data.eq(0)) s = {
                     'background-color': 'rgba(0,0,0,0)',
                     'border-color': 'white',
@@ -19986,7 +19986,7 @@ addLayer("terrasteel", {
     upgrades: {
         11: {
             title: "散发强大魔力的绿色合金",
-            description: "前5个泰拉钢锭每个能使阿卡纳蔷薇的效率变为25x，此后效果大幅降低",
+            description: "前5个泰拉钢锭每个能使阿卡纳蔷薇的效率变为25x，此后效果大幅降低（你已进入v0.8内容，之后的内容在BE版有bug，在v0.9发布时统一修复，你可以选择已修复bug的原版继续）",
             cost() { return new ExpantaNum(1) },
             unlocked() { return tmp.terrasteel.layerShown },
             effect() {
