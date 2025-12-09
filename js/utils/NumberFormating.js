@@ -11,6 +11,13 @@ function tet10(n) {
     return Decimal.tetrate(10, n)
 }
 
+function layeradd(n, layer) {
+    n = new Decimal(n)
+    layer = new Decimal(layer)
+    let slg = slog(n)
+    return Decimal.tetrate(10, slg.add(layer))
+}
+
 function addCommas(s) {
     if (s.length <= 3) return s
     let rem = s.length % 3
@@ -363,7 +370,7 @@ function formatSciEng(decimal, precision) {
 	if (isNaN(decimal.sign)||isNaN(decimal.layer)||isNaN(decimal.mag)) {
 		player.hasNaN = true;
 		console.log(decimal)
-		Decimal(0)
+		new Decimal(0)
 		for (i in player){
 			if (player[i] == undefined) continue
 			if (player[i].points != undefined) {

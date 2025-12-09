@@ -20,7 +20,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.9 BE",
+	num: "0.8 BE",
 	name: "",
 }
 
@@ -35,16 +35,6 @@ function changelog() {
 				- BE版的更新更慢，请前往原版检查更新<br>
 				- 如果出现了BE版特有的bug请前往github提issue<br>
 				- 如果原版的版本终点超过了F1.7976e308经验，BE版将停更，仅维护<br>
-				<br><br>
-			<h3>v0.9 - 下界、魔力、增幅</h3><br>
-				- 版本终点：获得1炽炎矿石，1.000000F5经验<br>
-				- 成就总数：149 + 12<br>
-				- 添加世界1层级：信素<br>
-				- 添加世界2层级：源质钢、精灵钢<br>
-				- 添加世界4层级：下界石英、荧石、流明、荧光信素、炽炎<br>
-				- 层级选择现在可用！<br>
-				- 机械手现在可以寻找和挖掘矿物（需要实验性内容密码）<br>
-				- 不同的滚动新闻数量：167<br>
 				<br><br>
 			<h3>v0.8 - 暮色森林</h3><br>
 				- 版本终点：获得1魂金锭，约e1.00e3,120,000经验<br>
@@ -178,29 +168,7 @@ function tiersUpdating(tier) {
 	t = tier.toNumber()
 	player.tiers[t - 1] = d(player.tiers[t - 1])
 	if (tier.eq(1)) player.tiers[t - 1] = player.level.max(1).div(50000).logBase(20).max(0).root(1.35).floor()
-	else if (tier.eq(2)) player.tiers[t - 1] = player.tiers[t - 2].max(1).div(10000).logBase(100).max(0).floor() //三阶等级增长简化为后续高阶等级做准备
-}
-
-function omegaTierUpdating() { //1e500,000 3阶=100,000 4阶=1 5阶
-	if (player.tiers[0].lt(1e5)) return
-	let t2lv = player.tiers[0]
-	let tier_raw = t2lv.slog(1e5)
-	let tier = tier_raw.floor()
-	let top = tier_raw.sub(tier)
-	tier = tier.add(2)
-	let count = d(1e5).tetrate(top)
-	let countInt = count.floor()
-	let highest = [[countInt, tier]]
-	if (tier.gte(4) && tier.lt(1001)) {
-		let tier2 = tier.sub(1)
-		let count2 = d(100000).pow(count)
-		let highest2 = [count2, tier2]
-		highest.push(highest2)
-	}
-	player.omegaTier = highest[0][1]
-	player.highestTierAmount = highest[0][0]
-	if (highest.length >= 2) player.secondHTA = highest[1][0]
-	return highest
+	else if (tier.eq(2)) player.tiers[t - 1] = player.tiers[t - 2].max(0).div(10000).logBase(100).max(0).floor() //三阶等级增长简化为后续高阶等级做准备
 }
 
 function nextLevelReq() {
@@ -210,12 +178,8 @@ function nextLevelReq() {
 function nextTiersReq(tier) {
 	tier = new ExpantaNum(tier)
 	t = tier.toNumber()
-	if (t == 1) return ExpantaNum.pow(20, player.tiers[0].max(0).add(1).pow(1.35)).times(50000).ceil()
-	if (t == 2) return d(100000).pow(player.tiers[1].add(1))
-}
-
-function omegaTiersReq() {
-	return d(100000).pow(player.highestTierAmount.add(1))
+	if (t == 1) return ExpantaNum.pow(20, player.tiers[t - 1].max(0).add(1).pow(1.35)).times(50000).ceil()
+	if (t == 2) return ExpantaNum.pow(100, player.tiers[t - 1].max(0).add(1)).times(10000).ceil()
 }
 
 
@@ -227,10 +191,7 @@ function addedPlayerData() {
 		lastTimePlayed: Date.now(),
 		gameSpeed: 1,
 		level: d(0),
-		tiers: [d(0), d(0)],
-		omegaTier: d(0),
-		highestTierAmount: d(0),
-		secondHTA: d(0),
+		tiers: [d(0), d(0), d(0), d(0), d(0)],
 		news: true,
 		devmode: false,
 		NaNpause: d(0),
@@ -308,7 +269,7 @@ function displayThingsRes() {
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.torridite.ore.gte(1) && player.points.gte('10^^5')
+	return player.soularium.points.gte(1) && player.points.gte('ee3120000')
 }
 
 var date = {

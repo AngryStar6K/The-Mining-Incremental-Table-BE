@@ -568,16 +568,19 @@ function setupModInfo() {
 function fixNaNs() {
 	NaNcheck(player);
 }
-function NaNcheck(data) {
+function NaNcheck(data, previous, name) {
 	for (item in data) {
 		if (data[item] == null) {
 		}
 		else if (Array.isArray(data[item])) {
-			NaNcheck(data[item]);
+			NaNcheck(data[item], data, item);
 		}
 		else if (data[item] !== data[item] || checkExpantaNumNaN(data[item])) {
 			if (!NaNalert) {
 				clearInterval(interval);
+				console.log(previous)
+				console.log(name)
+				console.log(data)
 				NaNalert = true;
 				alert("Invalid value found in player, named '" + item + "'. Please let the creator of this mod know! You can refresh the page, and you will be un-NaNed.")
 				return
@@ -586,7 +589,7 @@ function NaNcheck(data) {
 		else if (data[item] instanceof ExpantaNum) {
 		}
 		else if ((!!data[item]) && (data[item].constructor === Object)) {
-			NaNcheck(data[item]);
+			NaNcheck(data[item], data, item);
 		}
 	}
 }
