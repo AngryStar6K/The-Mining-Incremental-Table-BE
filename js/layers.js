@@ -16323,7 +16323,7 @@ addLayer("redstone", {
             if (!player.redstone.chosenID) player.redstone.chosenID = id
             else if (player.redstone.chosenID == id) player.redstone.chosenID = undefined
             //object: Decimal数字（附魔等级） array: 额外等级卡 BE版
-            else if (player.redstone.grid[player.redstone.chosenID].array) {
+            else if (player.redstone.grid[player.redstone.chosenID].mag + 1) {
                 if (player.redstone.grid[player.redstone.chosenID].eq(0)) player.redstone.chosenID = id
                 else {
                     if (data.mag + 1) {
