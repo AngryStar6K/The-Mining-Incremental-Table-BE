@@ -16230,7 +16230,7 @@ addLayer("redstone", {
                 let extraCardArray = []
                 let cardPowerArray = []
                 for (let i = 0; i < slots; i++) {
-                    if (player.redstone.grid[gridSquare[grid.rows][i]].array)
+                    if (player.redstone.grid[gridSquare[grid.rows][i]].mag + 1)
                         fortunesArray.push(player.redstone.grid[gridSquare[grid.rows][i]])
                     if (player.redstone.grid[gridSquare[grid.rows][i]] instanceof Array)
                         cardPowerArray.push(player.redstone.grid[gridSquare[grid.rows][i]][0])
