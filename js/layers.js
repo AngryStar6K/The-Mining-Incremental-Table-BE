@@ -16194,7 +16194,7 @@ addLayer("redstone", {
                 let slots = grid.rows * grid.cols
                 let emptyPos = []
                 for (let i = 0; i < slots; i++) {
-                    if (player.redstone.grid[gridSquare[grid.rows][i]].array) {
+                    if (player.redstone.grid[gridSquare[grid.rows][i]].mag + 1) {
                         if (player.redstone.grid[gridSquare[grid.rows][i]].eq(0))
                             emptyPos.push(gridSquare[grid.rows][i])
                     }
