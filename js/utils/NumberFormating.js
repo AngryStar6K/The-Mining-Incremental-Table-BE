@@ -760,3 +760,27 @@ var formatRarity = fr = function (num, sigma, colored) {
     }
     return Rname
 }
+
+function tiersNameChinese(num) {
+    let en = new ExpantaNum(num)
+    if (en.lte(0) || en.gt(1000)) return
+    let n = en.floor().toNumber()
+    if (n == 1000) return "一千"
+    let h = Math.floor(n / 100)
+    let d = Math.floor((n % 100) / 10)
+    let o = Math.floor(n % 10)
+    let ones = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"]
+    let magnitudes = ["", "十", "百", "千"]
+    let hr = ones[h] + magnitudes[2]
+    let dr = ones[d] + magnitudes[1]
+    let or = ones[o]
+    let result = ""
+    if (h == 0) hr = ''
+    if (d == 0) {
+        if (h == 0 || o == 0) dr = ''
+        else dr = '零'
+    }
+    if (d == 1 && h == 0) dr = magnitudes[1]
+    result = hr + dr + or
+    return result
+}
