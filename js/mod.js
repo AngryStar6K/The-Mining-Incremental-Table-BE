@@ -356,6 +356,34 @@ function getTpsDisplay() {
 }
 
 // 
+function getLevelDisplay() {
+	let a = ''
+	let noShadow = options.textShadowShown ? "" : `style="text-shadow: none"`
+	//Lv
+	if (player.tiers[1].lt(100000)) {
+		a += `<br><span class="overlayThing">等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.level)}</h2></span>`
+		//Next Lv Req
+		if (player.points.lt('ee12') && !tmp.experience.layerShown) a += `<br><span class="overlayThing">${format(player.points)}/${format(nextLevelReq())}</span>`
+		//T2Lv
+		if (hasAchievement('achievements', 123)) a += `<br><span class="overlayThing">二阶等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.tiers[0])}</h2></span>`
+		//Next T2Lv Req
+		if (player.tiers[0].lt(1e5) && hasAchievement('achievements', 123)) a += `<br><span class="overlayThing">${format(player.level)}/${format(nextTiersReq(1))}</span>`
+		//T3+Lv
+		if (hasAchievement('achievements', 202)) a += `<br><span class="overlayThing">三阶等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.tiers[1])}</h2></span>`,
+			//Next T3Lv Req
+			a += `<br><span class="overlayThing">${format(player.tiers[0])}/${format(nextTiersReq(2))}</span>`
+	}
+	else {
+		a += `<br><span class="overlayThing">${tiersNameChinese(player.omegaTier.sub(1))}阶等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.secondHTA)}</h2></span>`
+		a += `<br><span class="overlayThing">${tiersNameChinese(player.omegaTier)}阶等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.highestTierAmount)}</h2></span>`
+		a += `<br><span class="overlayThing">${formatWhole(player.secondHTA)}/${formatWhole(omegaTiersReq())}</span>`
+	}
+	//hardcaps display
+	if (player.points.gte('e1.7976e308') && player.experience.crystal.lte(0)) a += `<br><br><span class="overlayThing">我不会让你走得更远了</span>`
+	return a
+}
+
+// 
 function getPointsDisplay() {
 	let a = ''
 	a += tmp.displayThings
@@ -374,11 +402,7 @@ function getPointsDisplay() {
 		if (canGenPoints()) {
 			a += `<br><span class="overlayThing">(` + (tmp.other.oompsMag != 0 ? format(tmp.other.oomps) + " OoM" + (tmp.other.oompsMag < 0 ? "^^2" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s" : formatSmall(getPointGen())) + `/sec)</span>`
 		}
-		a += `<br><span class="overlayThing">等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.level)}</h2></span>`
-		if (player.points.lt('ee12') && !tmp.experience.layerShown) a += `<br><span class="overlayThing">${format(player.points)}/${format(nextLevelReq())}</span>`
-		if (hasAchievement('achievements', 123)) a += `<br><span class="overlayThing">二阶等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.tiers[0])}</h2></span>`,
-			a += `<br><span class="overlayThing">${format(player.level)}/${format(nextTiersReq(1))}</span>`
-		if (player.points.gte('e1.7976e308') && player.experience.crystal.lte(0)) a += `<br><br><span class="overlayThing">我不会让你走得更远了</span>`
+		a += getLevelDisplay()
 		a += `<div style="margin-top: 3px"></div>`
 	}
 	a += '<br><div class="vl2"></div>'
