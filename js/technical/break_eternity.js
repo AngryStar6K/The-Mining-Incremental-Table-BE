@@ -1063,8 +1063,11 @@
       
       //Handle new (e^N)X format.
       var newparts = value.split("e^");
-      if (newparts.length === 2)
+      var newpartsfromEN = value.split("(10^)^");
+      var chosen = newparts.length >= newpartsfromEN.length
+      if (newparts.length === 2 || newpartsfromEN.length === 2)
       {
+        if (!chosen) newparts = newpartsfromEN
         this.sign = 1;
         if (newparts[0].charAt(0) == "-")
         {

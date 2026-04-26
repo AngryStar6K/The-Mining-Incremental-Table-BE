@@ -80,6 +80,7 @@ function getStartLayerData(layer) {
 		layerdata.clickables = getStartClickables(layer);
 	layerdata.spentOnBuyables = ExpantaNumZero;
 	layerdata.upgrades = [];
+	layerdata.upgradesExpired = [];
 	layerdata.milestones = [];
 	layerdata.lastMilestone = null;
 	layerdata.achievements = [];

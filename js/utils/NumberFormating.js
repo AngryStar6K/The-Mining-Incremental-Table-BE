@@ -784,3 +784,17 @@ function tiersNameChinese(num) {
     result = hr + dr + or
     return result
 }
+
+
+function formatNoNegativeExponents(num, precision = 2) {
+    let absnum = new ExpantaNum(num).abs()
+    let sign = new ExpantaNum(num).sign == -1 ? '-' : ''
+    let formatR = ''
+    if (absnum.lt(new ExpantaNum(10).pow(-precision))) {
+        if (precision >= 1) formatR = '0.' + '0'.repeat(precision)
+        else formatR = '0'
+        formatR = sign + formatR
+        return formatR
+    }
+    return format(num, precision)
+}

@@ -20,7 +20,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.9 BE",
+	num: "0.10 BE",
 	name: "",
 }
 
@@ -35,6 +35,16 @@ function changelog() {
 				- BE版的更新更慢，请前往原版检查更新<br>
 				- 如果出现了BE版特有的bug请前往github提issue<br>
 				- 如果原版的版本终点超过了F1.7976e308经验，BE版将停更，仅维护<br>
+				<br><br>
+			<h3>v0.10 - 末影的流动</h3><br>
+				- 版本终点：解锁末影钢层级，F1.7976e308经验<br>
+				- 成就总数：166 + 13<br>
+				- 添加世界4层级：钴、阿迪特、玛玉灵<br>
+				- 添加世界5层级：末影、极寒末影、玄钢、耐酸铝、末影钢<br>
+				- 你现在可以通过快捷键(L)直接跳转层级选择<br>
+				- 你现在可以按H键隐藏层级<br>
+				- 机械手挖矿现在对所有人开放！<br>
+				- 不同的滚动新闻数量：175<br>
 				<br><br>
 			<h3>v0.9 - 下界、魔力、增幅</h3><br>
 				- 版本终点：获得1炽炎矿石，1.000000F5经验<br>
@@ -203,6 +213,26 @@ function omegaTierUpdating() { //1e500,000 3阶=100,000 4阶=1 5阶
 	return highest
 }
 
+function allTierUpdating() {
+	let omegaTier = player.omegaTier
+	let omega2Tier_raw = omegaTier.max(1).slog(100000)
+	let omega2Tier = omega2Tier_raw.floor()
+	let top = omega2Tier_raw.sub(omega2Tier)
+	let count = d(1e5).tetrate(top)
+	let countInt = count.floor()
+	let highestOmega2 = [[countInt, omega2Tier]]
+	if (omega2Tier.gte(1) && omega2Tier.lt(101)) {
+		let omega2Tier2 = omega2Tier.sub(1)
+		let count2 = d(100000).pow(count)
+		let highest2Omega2 = [count2, omega2Tier2]
+		highestOmega2.push(highest2Omega2)
+		player.allTier.ordinal = 'ω+' + fw(highestOmega2[0][1])
+		player.allTier.highest = highestOmega2[0][0]
+		player.allTier.secondOrd = 'ω' + (highestOmega2[1][1].eq(0) ? '' : ('+' + fw(highestOmega2[1][1])))
+		player.allTier.second = highestOmega2[1][0]
+	}
+}
+
 function nextLevelReq() {
 	return ExpantaNum.pow(25, player.level.max(0).add(1).pow(1.25))
 }
@@ -231,6 +261,12 @@ function addedPlayerData() {
 		omegaTier: d(0),
 		highestTierAmount: d(0),
 		secondHTA: d(0),
+		allTier: {
+			highest: d(0),
+			second: d(0),
+			ordinal: "",
+			secondOrd: "",
+		},
 		news: true,
 		devmode: false,
 		NaNpause: d(0),
@@ -242,7 +278,8 @@ function addedPlayerData() {
 		redeemedCodes: {
 		},
 		TPSwarn: false,
-		resourcePinned: []
+		resourcePinned: [],
+		layerHidden: [],
 	}
 }
 
@@ -287,11 +324,13 @@ function displayThingsRes() {
 		else d += `当前正在消耗 ${fuelName(fuelID())} 作为燃料`
 		d += '<br>'
 		if (isSmeltingItem()) d += `你正在熔炼 ${smeltingItemName(smeltingItemID())}`
+		else if (player.furnace.waitingforID) d += `正在等待 ${smeltingItemName(player.furnace.waitingforID)} 的原材料足够  ${textColor('[!]', 'cc9000')}`
 		else d += `你当前不在熔炼 ${textColor('[!]', 'cc0000')}`
 	}
 	if (tmp.alloy_s.layerShown) {
 		d += '<br>'
 		if (isAlloyingItem()) d += `你正在合金 ${alloyingItemName(alloyingItemID())}`
+		else if (player.alloy_s.waitingforID) d += `正在等待 ${alloyingItemName(player.alloy_s.waitingforID)} 的原材料足够  ${textColor('[!]', 'cc9000')}`
 		else d += `你当前不在合金 ${textColor('[!]', 'cc0000')}`
 	}
 	if (tmp.sing_fus.layerShown) {
@@ -373,13 +412,21 @@ function getLevelDisplay() {
 			//Next T3Lv Req
 			a += `<br><span class="overlayThing">${format(player.tiers[0])}/${format(nextTiersReq(2))}</span>`
 	}
-	else {
+	else if (player.omegaTier.lte(1000)) {
 		a += `<br><span class="overlayThing">${tiersNameChinese(player.omegaTier.sub(1))}阶等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.secondHTA)}</h2></span>`
 		a += `<br><span class="overlayThing">${tiersNameChinese(player.omegaTier)}阶等级<h2  class="overlayThing" id="points" ${noShadow}> ${formatWhole(player.highestTierAmount)}</h2></span>`
 		a += `<br><span class="overlayThing">${formatWhole(player.secondHTA)}/${formatWhole(omegaTiersReq())}</span>`
 	}
+	else if (player.omegaTier.lt(100000)) {
+		a += `<br>ω阶等级 ${textStyle_h2(formatWhole(player.omegaTier), 'ffdddd')}`
+	}
+	else {
+		a += `<br>${player.allTier.secondOrd}阶等级 ${textStyle_h2(formatWhole(player.allTier.second), 'ffdddd')}`
+		a += `<br>${player.allTier.ordinal}阶等级 ${textStyle_h2(formatWhole(player.allTier.highest), 'ffdddd')}`
+	}
 	//hardcaps display
 	if (player.points.gte('e1.7976e308') && player.experience.crystal.lte(0)) a += `<br><br><span class="overlayThing">我不会让你走得更远了</span>`
+	if (player.points.gte('10^^1.7976e308')) a += `<br><br><span class="overlayThing">我不会让你走得更远了，这是第二次</span>`
 	return a
 }
 
@@ -604,7 +651,26 @@ function updateTmpRes(diff) {
 		if (!tmpres.invar) tmpres.invar = { energy: player.invar.energy }
 		updateResourceOoMps(invar, 'energy', diff)
 	}
+	if (hasCraftingItem(682)) {
+		if (!tmpres.lumium) tmpres.lumium = {
+			laser0: player.lumium.laser0,
+			laser1: player.lumium.laser1,
+			laser2: player.lumium.laser2,
+		}
+		updateResourceOoMps(lumium, 'laser0', diff)
+		updateResourceOoMps(lumium, 'laser1', diff)
+		updateResourceOoMps(lumium, 'laser2', diff)
+	}
+	if (hasUpgrade(torridite, 12)) {
+		if (!tmpres.torridite) tmpres.torridite = { core: player.torridite.core }
+		updateResourceOoMps(torridite, 'core', diff)
+	}
+	if (hasCraftingItem(702)) {
+		if (!tmpres.torridite) tmpres.torridite = { core: player.torridite.core }
+		updateResourceOoMps(torridite, 'refined', diff)
+	}
 }
+
 
 function updateResourceOoMps(layer, res, diff) {
 	tmpres[layer + ' ' + res + ' mag'] = 0
@@ -639,4 +705,19 @@ function getOoMpsText(layer, res) {
 	if (tmpres[layer][res] == 0) return
 	t = (format(resOomps) + " OoM" + (resOompsMag < 0 ? "^^2" : resOompsMag > 1 ? "^" + resOompsMag : "") + "s")
 	return t
+}
+
+function achievementIDorder(id) {
+	let row = Math.floor(id / 10) - 1
+	let col = id % 10
+	if (row >= 10000) {
+		row = row - 10000
+		return 'S' + (row * 7 + col)
+	}
+	return row * 7 + col
+}
+
+function getMarkClass(marked) {
+	if (marked === true) return 'star'
+	else return marked
 }

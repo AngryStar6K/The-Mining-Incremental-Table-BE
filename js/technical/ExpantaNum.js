@@ -13,7 +13,7 @@
       // 1000 means there are at maximum of 1000 elements in array.
       // It is not recommended to make this number too big.
       // `ExpantaNum1.maxOps = 1000;`
-      maxOps: 1e3,
+      maxOps: 8,
 
       // Specify what format is used when serializing for JSON.stringify
       // 
@@ -1338,6 +1338,9 @@
     }
     if (input=="NaN") x.array=[[0,NaN]];
     else if (input=="Infinity") x.array=[[0,Infinity]];
+    if (input[0]=="e" && input[1]=="^"){
+      input = "(10^)^"+input.substring(2)
+    }
     else{
       var a,b,c,d,i;
       if (input[0]=="J"){
